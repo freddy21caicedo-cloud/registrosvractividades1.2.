@@ -845,38 +845,94 @@ document.addEventListener('DOMContentLoaded', () => {
         let t = texto.trim();
         if (!t) return "";
 
-        // 1. Limpieza de espacios dobles y corrección de palabras partidas habituales
+        // 1. Limpieza de espacios múltiples y corrección de palabras partidas
         t = t.replace(/\s+/g, " ");
         t = t.replace(/\bi\s+dea\b/gi, "idea");
         t = t.replace(/\bi\s+deas\b/gi, "ideas");
-        t = t.replace(/\bcistema\b/gi, "sistema");
-        t = t.replace(/\bcistemas\b/gi, "sistemas");
-        t = t.replace(/\bacuacula\b/gi, "acuícola");
-        t = t.replace(/\bacuaculas\b/gi, "acuícolas");
-        t = t.replace(/\bacuicola\b/gi, "acuícola");
-        t = t.replace(/\bacuicolas\b/gi, "acuícolas");
-        t = t.replace(/\btecnica\b/gi, "técnica");
-        t = t.replace(/\btecnico\b/gi, "técnico");
-        t = t.replace(/\bproduccion\b/gi, "producción");
-        t = t.replace(/\batencion\b/gi, "atención");
-        t = t.replace(/\brevision\b/gi, "revisión");
-        t = t.replace(/\balimentacion\b/gi, "alimentación");
-        t = t.replace(/\bpara bien\b/gi, "de manera positiva");
 
-        // 2. Corregir puntuación y espacios desalineados
-        t = t.replace(/([,;.:?!])([^\s0-9])/g, "$1 $2");
+        // 2. Corrección ortográfica técnica y comercial
+        const correcciones = [
+            [/\bcistema\b/gi, "sistema"],
+            [/\bcistemas\b/gi, "sistemas"],
+            [/\bacuacula\b/gi, "acuícola"],
+            [/\bacuaculas\b/gi, "acuícolas"],
+            [/\bacuicola\b/gi, "acuícola"],
+            [/\bacuicolas\b/gi, "acuícolas"],
+            [/\bporcicultura\b/gi, "porcicultura"],
+            [/\btecnica\b/gi, "técnica"],
+            [/\btecnico\b/gi, "técnico"],
+            [/\btecnicos\b/gi, "técnicos"],
+            [/\bproduccion\b/gi, "producción"],
+            [/\batencion\b/gi, "atención"],
+            [/\brevision\b/gi, "revisión"],
+            [/\balimentacion\b/gi, "alimentación"],
+            [/\bnutricion\b/gi, "nutrición"],
+            [/\bparametro\b/gi, "parámetro"],
+            [/\bparametros\b/gi, "parámetros"],
+            [/\bverificacion\b/gi, "verificación"],
+            [/\bevaluacion\b/gi, "evaluación"],
+            [/\bcapacitacion\b/gi, "capacitación"],
+            [/\bpresentacion\b/gi, "presentación"],
+            [/\bcotizacion\b/gi, "cotización"],
+            [/\bnegociacion\b/gi, "negociación"],
+            [/\binstalacion\b/gi, "instalación"],
+            [/\bdia\b/gi, "día"],
+            [/\bdias\b/gi, "días"],
+            [/\bse realizo\b/gi, "se realizó"],
+            [/\bse solicito\b/gi, "se solicitó"],
+            [/\bse reviso\b/gi, "se revisó"],
+            [/\bse entrego\b/gi, "se entregó"],
+            [/\bse confirmo\b/gi, "se confirmó"]
+        ];
 
-        // 3. Estructura ejecutiva si comienza informalmente
+        correcciones.forEach(([regex, reemplazo]) => {
+            t = t.replace(regex, reemplazo);
+        });
+
+        // 3. Elevación de vocabulario informal a lenguaje corporativo comercial Italcol
+        const vocabularioElevado = [
+            [/\bpara bien\b/gi, "de manera altamente favorable"],
+            [/\bcliente contento\b/gi, "el cliente manifiesta plena satisfacción con los resultados"],
+            [/\bcliente satisfecho\b/gi, "el cliente confirma excelente desempeño y conformidad"],
+            [/\bpidio mas\b/gi, "solicitó incremento en los volúmenes de pedido"],
+            [/\bpidio producto\b/gi, "solicitó despacho de producto"],
+            [/\bse hablo con\b/gi, "se sostuvo reunión de trabajo con"],
+            [/\bse hablo de\b/gi, "se abordaron los temas correspondientes a"],
+            [/\bse visitando\b/gi, "se efectúa visita comercial a"],
+            [/\bfui a ver\b/gi, "se realizó inspección técnica en"],
+            [/\bfui a visitar\b/gi, "se ejecutó visita de acompañamiento comercial a"],
+            [/\bdijo que\b/gi, "manifestó que"],
+            [/\bquedamos en\b/gi, "se estableció como compromiso acordado"],
+            [/\bbuen rendimiento\b/gi, "óptimo desempeño en los parámetros productivos"],
+            [/\bbaja produccion\b/gi, "novedades en el volumen de producción"],
+            [/\bse hizo charla\b/gi, "se impartió jornada de capacitación técnica"],
+            [/\bse tomo muestra\b/gi, "se recolectaron muestras para análisis especializado"]
+        ];
+
+        vocabularioElevado.forEach(([regex, reemplazo]) => {
+            t = t.replace(regex, reemplazo);
+        });
+
+        // 4. Estructura ejecutiva de inicio de párrafo
         if (/^la idea es /i.test(t)) {
-            t = t.replace(/^la idea es /i, "Se busca ");
+            t = t.replace(/^la idea es /i, "Se establece como objetivo principal ");
         } else if (/^la idea /i.test(t)) {
-            t = t.replace(/^la idea /i, "El objetivo es ");
+            t = t.replace(/^la idea /i, "Se orientan las acciones a ");
         } else if (/^se quiere /i.test(t)) {
-            t = t.replace(/^se quiere /i, "Se tiene como meta ");
+            t = t.replace(/^se quiere /i, "Se proyecta ");
+        } else if (/^se visito /i.test(t)) {
+            t = t.replace(/^se visito /i, "Se realizó visita comercial a ");
+        } else if (/^se realizo /i.test(t)) {
+            t = t.replace(/^se realizo /i, "Se llevó a cabo ");
         }
 
-        // 4. Mayúscula inicial y punto final
-        t = t.charAt(0).toUpperCase() + t.slice(1);
+        // 5. Corregir puntuación y espacios
+        t = t.replace(/([,;.:?!])([^\s0-9])/g, "$1 $2");
+
+        // 6. Mayúscula en primera letra de oraciones tras punto
+        t = t.replace(/(^\s*|[.!?]\s+)([a-záéíóúñ])/g, (match, p1, p2) => p1 + p2.toUpperCase());
+
+        // 7. Asegurar punto final
         if (!/[.!?]$/.test(t)) {
             t += ".";
         }
