@@ -175,6 +175,9 @@ label i {
 
 input[type="text"], input[type="date"], select, textarea {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     padding: 12px 16px;
     border: 1.5px solid var(--input-border);
     border-radius: 10px;
@@ -182,6 +185,21 @@ input[type="text"], input[type="date"], select, textarea {
     color: var(--text-body);
     font-family: inherit;
     font-size: 15px;
+}
+
+input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-height: 48px;
+    text-align: center;
+    background-color: var(--input-bg);
+}
+
+input[type="date"]::-webkit-date-and-time-value {
+    text-align: center;
+    min-height: 1.4em;
+    margin: 0;
 }
 
 input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
@@ -575,8 +593,19 @@ button.action-btn {
 
 /* Responsiveness */
 @media (max-width: 768px) {
+    body {
+        padding: 16px 8px;
+    }
+    .container {
+        padding: 20px 14px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
     .form-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
     }
     .form-group.full-width {
         grid-column: span 1;
@@ -590,11 +619,20 @@ button.action-btn {
         grid-column: span 1;
         flex-direction: column;
     }
-    .container {
-        padding: 24px;
-    }
     h2 {
-        font-size: 22px;
+        font-size: 20px;
+    }
+    .search-add-group {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .searchable-select-wrapper {
+        flex: 1;
+        min-width: 0;
+    }
+    .btn-add {
+        padding: 0 16px;
+        white-space: nowrap;
     }
 }
 
@@ -783,5 +821,3 @@ button.action-btn {
     color: var(--error);
     border-color: var(--error);
 }
-
-
