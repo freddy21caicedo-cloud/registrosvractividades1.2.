@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Diario de Visitas Comerciales</title>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon / Tab Icon -->
+    <link rel="icon" type="image/png" href="logo.italcol.png">
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <div class="logo-title-wrapper">
+            <img src="logo.italcol.png" alt="Italcol Logo" class="brand-logo">
+            <h2><span>Registro de Actividades VGR Italcol Los Patios S.A.S.</span></h2>
+        </div>
+        <button id="themeToggle" class="theme-toggle" title="Cambiar Tema">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </div>
+    
+    <form id="visitaForm" onsubmit="event.preventDefault();">
+        <div class="form-grid">
+            
+            <!-- Persona que realiza la visita -->
+            <div class="form-group">
+                <label for="persona"><i class="fa-solid fa-user-tie"></i> Persona que visita:</label>
+                <select id="persona" required>
+                    <option value="">Seleccione su nombre...</option>
+                    <option value="ALIED KARINA MENESES JAIMES">ALIED KARINA MENESES JAIMES</option>
+                    <option value="FRANKLIN ALEXIS CHACHON GELVEZ">FRANKLIN ALEXIS CHACHON GELVEZ</option>
+                    <option value="FREDDY ALFONSO CAICEDO JAIMES">FREDDY ALFONSO CAICEDO JAIMES</option>
+                    <option value="JULIAN ANDRES MOLINA MAYO">JULIAN ANDRES MOLINA MAYO</option>
+                    <option value="OSCAR ORLANDO CHONA VILLAMIZAR">OSCAR ORLANDO CHONA VILLAMIZAR</option>
+                    <option value="MIGUEL ANGEL RICO BALLESTEROS">MIGUEL ANGEL RICO BALLESTEROS</option>
+                    <option value="DIEGO ORLANDO ROA LANDAZABAL">DIEGO ORLANDO ROA LANDAZABAL</option>
+                    <option value="CARLOS FRANCISCO JÁCOME ORDOÑEZ">CARLOS FRANCISCO JÁCOME ORDOÑEZ</option>
+                    <option value="LEONARDO FABIO BLANCO CHAPARRO">LEONARDO FABIO BLANCO CHAPARRO</option>
+                </select>
+            </div>
+
+            <!-- Fecha -->
+            <div class="form-group">
+                <label for="fecha"><i class="fa-solid fa-calendar-day"></i> Fecha:</label>
+                <input type="date" id="fecha" required>
+            </div>
+
+            <!-- Lugar (Manual) -->
+            <div class="form-group">
+                <label for="lugar"><i class="fa-solid fa-location-dot"></i> Lugar:</label>
+                <input type="text" id="lugar" placeholder="Ej: Cúcuta, Neiva..." required>
+            </div>
+
+            <!-- Razón Social (Buscador y Selector Múltiple) -->
+            <div class="form-group full-width">
+                <label for="buscar_cliente"><i class="fa-solid fa-building"></i> Buscar y Añadir Clientes (Razón Social):</label>
+                <div class="search-add-group">
+                    <div class="searchable-select-wrapper" style="position: relative; flex: 1;">
+                        <input type="text" id="buscar_cliente" placeholder="Escribe para buscar cliente..." autocomplete="off" style="width: 100%; padding-right: 35px;">
+                        <i class="fa-solid fa-chevron-down select-arrow" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 12px;"></i>
+                        <div id="buscar_cliente_options" class="search-options-dropdown"></div>
+                    </div>
+                    <button type="button" class="btn-add" id="btnAddCliente"><i class="fa-solid fa-plus"></i> Añadir</button>
+                </div>
+                <div class="help-text">Escribe para filtrar la lista, selecciona el cliente y presiona "Añadir". Puedes agregar varios.</div>
+            </div>
+
+            <!-- ¿Es un Cliente Prospecto? y Nombre de Cliente Prospecto -->
+            <div class="conditional-group" style="margin-top: 5px; margin-bottom: 5px;">
+                <div class="form-group">
+                    <label for="es_prospecto"><i class="fa-solid fa-circle-question"></i> ¿Es un Cliente Prospecto?</label>
+                    <select id="es_prospecto" required>
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                </div>
+                <div class="form-group support-detail" id="prospecto_nombre_container">
+                    <label for="prospecto_nombre"><i class="fa-solid fa-user-plus"></i> Nombre Cliente Prospecto (Mayúsculas):</label>
+                    <div class="search-add-group">
+                        <input type="text" id="prospecto_nombre" placeholder="ESCRIBA EL NOMBRE DEL PROSPECTO..." style="text-transform: uppercase;">
+                        <button type="button" class="btn-add" id="btnAddProspecto"><i class="fa-solid fa-plus"></i> Añadir</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clientes Seleccionados (Tags) -->
+            <div class="form-group full-width">
+                <label><i class="fa-solid fa-tags"></i> Clientes seleccionados para este registro:</label>
+                <div id="clientes_tags" class="tags-container">
+                    <span style="color: var(--text-secondary); font-size: 14px; font-style: italic; padding: 4px 0;">Ningún cliente añadido aún</span>
+                </div>
+                <textarea id="razon_social" style="display:none;" required></textarea>
+            </div>
+
+            <!-- Gerente de Zona (Autocompletado) -->
+            <div class="form-group">
+                <label for="zona"><i class="fa-solid fa-map-location-dot"></i> Gerente de Zona:</label>
+                <input type="text" id="zona" placeholder="Se autocompleta según el cliente..." readonly>
+            </div>
+
+            <!-- Canal (Autocompletado / Editable) -->
+            <div class="form-group">
+                <label for="canal"><i class="fa-solid fa-network-wired"></i> Canal:</label>
+                <select id="canal" required>
+                    <option value="">Seleccione canal...</option>
+                    <option value="C01 - DIRECTOS">C01 - DIRECTOS</option>
+                    <option value="C02 - DISTRIBUIDORES">C02 - DISTRIBUIDORES</option>
+                    <option value="C03 - VINCULADOS">C03 - VINCULADOS</option>
+                </select>
+            </div>
+
+            <!-- Línea -->
+            <div class="form-group full-width">
+                <label for="linea"><i class="fa-solid fa-dna"></i> Línea:</label>
+                <select id="linea" required>
+                    <option value="">Seleccione la línea...</option>
+                    <option value="Todas las líneas">Todas las líneas</option>
+                    <option value="Porcicultura">Porcicultura</option>
+                    <option value="Acuicultura">Acuicultura</option>
+                    <option value="Equinos">Equinos</option>
+                    <option value="Pollo Engorde">Pollo Engorde</option>
+                    <option value="Postura">Postura</option>
+                    <option value="Mascotas">Mascotas</option>
+                    <option value="Ganadería">Ganadería</option>
+                    <option value="Sales">Sales</option>
+                </select>
+            </div>
+
+            <!-- Pilar -->
+            <div class="form-group">
+                <label for="pilar"><i class="fa-solid fa-circle-nodes"></i> Pilar:</label>
+                <select id="pilar" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Competitiva">Competitiva</option>
+                    <option value="Servicio">Servicio</option>
+                    <option value="Aliado">Aliado</option>
+                </select>
+            </div>
+
+            <!-- Marca -->
+            <div class="form-group">
+                <label for="marca"><i class="fa-solid fa-trademark"></i> Marca / Tipo de Acción:</label>
+                <select id="marca" required>
+                    <option value="">Seleccione...</option>
+                    <option value="Servicio técnico">Servicio técnico</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Formación">Formación</option>
+                    <option value="Capacitación">Capacitación</option>
+                    <option value="Mercadeo">Mercadeo</option>
+                    <option value="Sostenibilidad">Sostenibilidad</option>
+                </select>
+            </div>
+
+            <!-- Actividad (Buscador y Selector Múltiple) -->
+            <div class="form-group full-width">
+                <label for="buscar_actividad"><i class="fa-solid fa-list-check"></i> Añadir Actividades:</label>
+                <div class="search-add-group">
+                    <div class="searchable-select-wrapper" style="position: relative; flex: 1;">
+                        <input type="text" id="buscar_actividad" placeholder="Escribe para buscar actividad..." autocomplete="off" style="width: 100%; padding-right: 35px;">
+                        <i class="fa-solid fa-chevron-down select-arrow" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; font-size: 12px;"></i>
+                        <div id="actividad_options" class="search-options-dropdown"></div>
+                    </div>
+                    <button type="button" class="btn-add" id="btnAddActividad"><i class="fa-solid fa-plus"></i> Añadir</button>
+                </div>
+                <div class="help-text">Escribe para filtrar la lista oficial, selecciona la actividad y presiona "Añadir". Puedes agregar varias.</div>
+            </div>
+
+            <!-- Actividades Seleccionadas (Tags) -->
+            <div class="form-group full-width">
+                <label><i class="fa-solid fa-tags"></i> Actividades seleccionadas para este registro:</label>
+                <div id="actividades_tags" class="tags-container">
+                    <span style="color: var(--text-secondary); font-size: 14px; font-style: italic; padding: 4px 0;">Ninguna actividad añadida aún</span>
+                </div>
+                <textarea id="actividad" style="display:none;" required></textarea>
+            </div>
+
+            <!-- Observaciones (Manual con IA) -->
+            <div class="form-group full-width">
+                <div class="label-action-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                    <label for="observaciones" style="margin-bottom: 0;"><i class="fa-solid fa-comment-dots"></i> Observaciones:</label>
+                    <div class="ia-buttons-wrapper" style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="btnUndoIA" class="btn-undo-ia" style="display: none;" title="Deshacer cambios de IA">
+                            <i class="fa-solid fa-rotate-left"></i> Deshacer
+                        </button>
+                        <button type="button" id="btnMejorarIA" class="btn-ia-magic">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Mejorar con IA
+                        </button>
+                    </div>
+                </div>
+                <textarea id="observaciones" placeholder="Describe los logros, compromisos o detalles de la visita comercial..." required></textarea>
+            </div>
+
+            <!-- Evidencia Fotográfica -->
+            <div class="form-group full-width">
+                <label for="foto_evidencia"><i class="fa-solid fa-camera"></i> Evidencia Fotográfica:</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="foto_evidencia" accept="image/*" style="display: none;">
+                    <button type="button" class="btn-file-trigger" onclick="document.getElementById('foto_evidencia').click();">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Seleccionar o Tomar Foto
+                    </button>
+                    <span id="file_name_text" class="help-text" style="margin-left: 10px;">Ningún archivo seleccionado</span>
+                </div>
+                <div id="image_preview_container" class="image-preview-container" style="display: none; margin-top: 15px; position: relative;">
+                    <img id="image_preview" src="" alt="Vista previa de evidencia" style="max-width: 100%; max-height: 250px; border-radius: 10px; border: 1.5px solid var(--input-border); object-fit: contain;">
+                    <button type="button" id="btnRemoveFoto" class="btn-remove-foto" title="Remover Foto">&times;</button>
+                </div>
+            </div>
+
+            <!-- Sección de Apoyos (Condicionales Premium) -->
+            <div class="conditional-group">
+                <!-- Apoyo Aliado -->
+                <div class="form-group">
+                    <label for="apoyo_aliado"><i class="fa-solid fa-handshake"></i> ¿Apoyo aliado?</label>
+                    <select id="apoyo_aliado" required>
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                    <div id="aliado_quien_container" class="support-detail">
+                        <input type="text" id="apoyo_aliado_quien" placeholder="¿Quién apoyó? (Nombre)">
+                    </div>
+                </div>
+
+                <!-- Apoyo Especialista -->
+                <div class="form-group">
+                    <label for="apoyo_especialista"><i class="fa-solid fa-user-gear"></i> ¿Apoyo especialista?</label>
+                    <select id="apoyo_especialista" required>
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                    <div id="especialista_quien_container" class="support-detail">
+                        <input type="text" id="apoyo_especialista_quien" placeholder="¿Quién apoyó? (Nombre)">
+                    </div>
+                </div>
+
+                <!-- Apoyo Gerente de Zona -->
+                <div class="form-group full-width">
+                    <label for="apoyo_gerente_zona"><i class="fa-solid fa-user-tie"></i> ¿Apoyo Gerente de Zona?</label>
+                    <select id="apoyo_gerente_zona" required>
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                    <div id="gerente_quien_container" class="support-detail">
+                        <select id="apoyo_gerente_zona_quien">
+                            <option value="">-- Selecciona el Gerente de Zona --</option>
+                            <option value="JULIAN ANDRES MOLINA MAYO">JULIAN ANDRES MOLINA MAYO</option>
+                            <option value="OSCAR ORLANDO CHONA VILLAMIZAR">OSCAR ORLANDO CHONA VILLAMIZAR</option>
+                            <option value="MIGUEL ANGEL RICO BALLESTEROS">MIGUEL ANGEL RICO BALLESTEROS</option>
+                            <option value="DIEGO ORLANDO ROA LANDAZABAL">DIEGO ORLANDO ROA LANDAZABAL</option>
+                            <option value="CARLOS FRANCISCO JÁCOME ORDOÑEZ">CARLOS FRANCISCO JÁCOME ORDOÑEZ</option>
+                            <option value="BLANCO CHAPARRO LEONARDO FABIO">BLANCO CHAPARRO LEONARDO FABIO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ¿La actividad tuvo alguna asignación económica? y Gasto/Costo -->
+            <div class="conditional-group" style="margin-top: 15px; margin-bottom: 15px;">
+                <div class="form-group">
+                    <label for="asignacion_economica"><i class="fa-solid fa-comments-dollar"></i> ¿Asignación económica?</label>
+                    <select id="asignacion_economica" required>
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                </div>
+                <div class="form-group support-detail" id="gasto_costo_container">
+                    <label for="gasto_costo"><i class="fa-solid fa-money-bill-wave"></i> Gasto / Costo (COP):</label>
+                    <input type="text" id="gasto_costo" placeholder="Ej: $ 50.000">
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="button-group">
+                <button type="button" class="action-btn btn-whatsapp" id="btnWhatsApp"><i class="fa-brands fa-whatsapp"></i> Enviar a WhatsApp</button>
+                <button type="button" class="action-btn btn-save" id="btnGuardar"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar en Sheets</button>
+            </div>
+
+
+            
+        </div>
+    </form>
+</div>
+
+<!-- Modal de Similitud de Actividades -->
+<div id="similarityModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+        <div class="modal-header">
+            <i class="fa-solid fa-triangle-exclamation modal-icon"></i>
+            <h3>Actividad Similar Encontrada</h3>
+        </div>
+        <div class="modal-body">
+            <p>La actividad que intentas añadir (<strong>"<span id="modalNuevaActividad"></span>"</strong>) es muy similar a una actividad existente:</p>
+            <div class="similar-suggestion" id="modalSugerencia"></div>
+            <p>¿Qué deseas hacer?</p>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal btn-use-existing" id="btnUseExisting">
+                <i class="fa-solid fa-check"></i> Usar "<span id="modalBtnExistenteTexto"></span>"
+            </button>
+            <button type="button" class="btn-modal btn-create-new" id="btnCreateNew">
+                <i class="fa-solid fa-plus"></i> Crear de todos modos
+            </button>
+            <button type="button" class="btn-modal btn-cancel-modal" id="btnCancelModal">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notifications -->
+<div id="toast" class="toast">
+    <span id="toastIcon"></span>
+    <span id="toastMessage"></span>
+</div>
+
+<!-- Scripts -->
+<script src="clientes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
