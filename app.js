@@ -842,16 +842,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let originalObservaciones = '';
 
     const mejorarRedaccionIA = (texto) => {
-        let t = texto.trim();
-        if (!t) return "";
+        let raw = texto.trim();
+        if (!raw) return "";
 
-        // 1. Limpieza de espacios múltiples y corrección de palabras partidas
-        t = t.replace(/\s+/g, " ");
+        // 1. Normalización inicial y limpieza
+        let t = raw.replace(/\s+/g, " ");
         t = t.replace(/\bi\s+dea\b/gi, "idea");
         t = t.replace(/\bi\s+deas\b/gi, "ideas");
 
-        // 2. Corrección ortográfica técnica y comercial
-        const correcciones = [
+        // 2. Diccionario de transformación de vocabulario informal a técnico-comercial
+        const reemplazosTecnicos = [
             [/\bcistema\b/gi, "sistema"],
             [/\bcistemas\b/gi, "sistemas"],
             [/\bacuacula\b/gi, "acuícola"],
@@ -869,7 +869,6 @@ document.addEventListener('DOMContentLoaded', () => {
             [/\bnutricion\b/gi, "nutrición"],
             [/\bparametro\b/gi, "parámetro"],
             [/\bparametros\b/gi, "parámetros"],
-            [/\bverificacion\b/gi, "verificación"],
             [/\bevaluacion\b/gi, "evaluación"],
             [/\bcapacitacion\b/gi, "capacitación"],
             [/\bpresentacion\b/gi, "presentación"],
@@ -878,61 +877,54 @@ document.addEventListener('DOMContentLoaded', () => {
             [/\binstalacion\b/gi, "instalación"],
             [/\bdia\b/gi, "día"],
             [/\bdias\b/gi, "días"],
-            [/\bse realizo\b/gi, "se realizó"],
-            [/\bse solicito\b/gi, "se solicitó"],
-            [/\bse reviso\b/gi, "se revisó"],
-            [/\bse entrego\b/gi, "se entregó"],
-            [/\bse confirmo\b/gi, "se confirmó"]
-        ];
-
-        correcciones.forEach(([regex, reemplazo]) => {
-            t = t.replace(regex, reemplazo);
-        });
-
-        // 3. Elevación de vocabulario informal a lenguaje corporativo comercial Italcol
-        const vocabularioElevado = [
             [/\bpara bien\b/gi, "de manera altamente favorable"],
-            [/\bcliente contento\b/gi, "el cliente manifiesta plena satisfacción con los resultados"],
-            [/\bcliente satisfecho\b/gi, "el cliente confirma excelente desempeño y conformidad"],
+            [/\bcliente contento\b/gi, "el cliente manifiesta alta conformidad con los resultados"],
+            [/\bcliente satisfecho\b/gi, "el cliente confirma excelente desempeño del programa nutricional"],
             [/\bpidio mas\b/gi, "solicitó incremento en los volúmenes de pedido"],
-            [/\bpidio producto\b/gi, "solicitó despacho de producto"],
+            [/\bpidio producto\b/gi, "solicitó la programación de despacho de producto"],
             [/\bse hablo con\b/gi, "se sostuvo reunión de trabajo con"],
-            [/\bse hablo de\b/gi, "se abordaron los temas correspondientes a"],
-            [/\bse visitando\b/gi, "se efectúa visita comercial a"],
+            [/\bse hablo de\b/gi, "se abordaron los aspectos técnicos y comerciales correspondientes a"],
             [/\bfui a ver\b/gi, "se realizó inspección técnica en"],
             [/\bfui a visitar\b/gi, "se ejecutó visita de acompañamiento comercial a"],
             [/\bdijo que\b/gi, "manifestó que"],
-            [/\bquedamos en\b/gi, "se estableció como compromiso acordado"],
-            [/\bbuen rendimiento\b/gi, "óptimo desempeño en los parámetros productivos"],
-            [/\bbaja produccion\b/gi, "novedades en el volumen de producción"],
+            [/\bquedamos en\b/gi, "se concertó como compromiso acordado"],
+            [/\bbuen rendimiento\b/gi, "óptimo desempeño en los parámetros zootécnicos"],
+            [/\bbaja produccion\b/gi, "novedades en el rendimiento productivo"],
             [/\bse hizo charla\b/gi, "se impartió jornada de capacitación técnica"],
-            [/\bse tomo muestra\b/gi, "se recolectaron muestras para análisis especializado"]
+            [/\bse tomo muestra\b/gi, "se recolectaron muestras para análisis de laboratorio"]
         ];
 
-        vocabularioElevado.forEach(([regex, reemplazo]) => {
+        reemplazosTecnicos.forEach(([regex, reemplazo]) => {
             t = t.replace(regex, reemplazo);
         });
 
-        // 4. Estructura ejecutiva de inicio de párrafo
+        // 3. Reconstrucción sintáctica del texto para convertirlo en informe ejecutivo
         if (/^la idea es /i.test(t)) {
-            t = t.replace(/^la idea es /i, "Se establece como objetivo principal ");
+            t = t.replace(/^la idea es /i, "En el marco de la gestión técnico-comercial, se establece como objetivo ");
         } else if (/^la idea /i.test(t)) {
-            t = t.replace(/^la idea /i, "Se orientan las acciones a ");
+            t = t.replace(/^la idea /i, "Las acciones se orientan a ");
         } else if (/^se quiere /i.test(t)) {
-            t = t.replace(/^se quiere /i, "Se proyecta ");
+            t = t.replace(/^se quiere /i, "Se proyecta en la unidad productiva ");
         } else if (/^se visito /i.test(t)) {
-            t = t.replace(/^se visito /i, "Se realizó visita comercial a ");
+            t = t.replace(/^se visito /i, "Se realizó visita de acompañamiento técnico-comercial a ");
         } else if (/^se realizo /i.test(t)) {
-            t = t.replace(/^se realizo /i, "Se llevó a cabo ");
+            t = t.replace(/^se realizo /i, "Se llevó a cabo la actividad de ");
+        } else if (!/^(Se |En |Durante |Con el fin |Atendiendo )/i.test(t)) {
+            t = "Durante la actividad comercial, " + t.charAt(0).toLowerCase() + t.slice(1);
         }
 
-        // 5. Corregir puntuación y espacios
+        // 4. Normalización de conectores técnicos
+        t = t.replace(/ y tambi[eé]n /gi, ", así como ");
+        t = t.replace(/ para que /gi, " con el fin de ");
+        t = t.replace(/ porque /gi, " debido a que ");
+
+        // 5. Ajuste fino de signos de puntuación y espacios
         t = t.replace(/([,;.:?!])([^\s0-9])/g, "$1 $2");
 
-        // 6. Mayúscula en primera letra de oraciones tras punto
+        // 6. Capitalización de primera letra en cada oración
         t = t.replace(/(^\s*|[.!?]\s+)([a-záéíóúñ])/g, (match, p1, p2) => p1 + p2.toUpperCase());
 
-        // 7. Asegurar punto final
+        // 7. Asegurar cierre formal
         if (!/[.!?]$/.test(t)) {
             t += ".";
         }
