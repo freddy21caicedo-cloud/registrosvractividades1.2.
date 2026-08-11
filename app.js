@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save to Google Sheets Logic
     btnGuardar.addEventListener('click', () => {
-        const webhookUrl = 'https://script.google.com/macros/s/AKfycbxxA8EfMGO6QIvFiYa5adF7XIs3yeDVnkB2b1Zddb5GSpuu4YkXIozrPiDPK_pU1c5t/exec';
+        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwTWkY456vNjUR2HFIZM3vlOn-yFS0N6y6A642T0gPlfCbFLFLw_-9o_MBBw8JRTxwy/exec';
 
         const data = getPayload();
         // Validation check
@@ -983,7 +983,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnMejorarIA.disabled = true;
             btnMejorarIA.innerHTML = `<span class="spinner"></span> Mejorando con IA...`;
 
-            const webhookUrl = 'https://script.google.com/macros/s/AKfycbxxA8EfMGO6QIvFiYa5adF7XIs3yeDVnkB2b1Zddb5GSpuu4YkXIozrPiDPK_pU1c5t/exec';
+            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwTWkY456vNjUR2HFIZM3vlOn-yFS0N6y6A642T0gPlfCbFLFLw_-9o_MBBw8JRTxwy/exec';
 
             // Intentar consultar el Webhook de Google Apps Script (Gemini API real)
             fetch(webhookUrl, {
