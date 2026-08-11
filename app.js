@@ -868,10 +868,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let t = raw;
 
-        // 0. Limpiar saludos informales iniciales o muletillas conversacionales
-        t = t.replace(/^(hola|buenos dias|buenas tardes|buenas|por favor|oye)\b[\s,]+/i, "");
-
-        // 1. Correcciones ortográficas e industriales base
+        // Correcciones ortográficas esenciales respetando tu redacción original
         const correcciones = [
             [/\bcistema\b/gi, "sistema"],
             [/\bcistemas\b/gi, "sistemas"],
@@ -879,9 +876,6 @@ document.addEventListener('DOMContentLoaded', () => {
             [/\bacuaculas\b/gi, "acuícolas"],
             [/\bacuicola\b/gi, "acuícola"],
             [/\bacuicolas\b/gi, "acuícolas"],
-            [/\bporcicultura\b/gi, "porcicultura"],
-            [/\bavicultura\b/gi, "avicultura"],
-            [/\bganaderia\b/gi, "ganadería"],
             [/\btecnica\b/gi, "técnica"],
             [/\btecnico\b/gi, "técnico"],
             [/\btecnicos\b/gi, "técnicos"],
@@ -894,9 +888,6 @@ document.addEventListener('DOMContentLoaded', () => {
             [/\bparametros\b/gi, "parámetros"],
             [/\bevaluacion\b/gi, "evaluación"],
             [/\bcapacitacion\b/gi, "capacitación"],
-            [/\bpresentacion\b/gi, "presentación"],
-            [/\bcotizacion\b/gi, "cotización"],
-            [/\bnegociacion\b/gi, "negociación"],
             [/\binstalacion\b/gi, "instalación"],
             [/\bdia\b/gi, "día"],
             [/\bdias\b/gi, "días"],
@@ -911,57 +902,7 @@ document.addEventListener('DOMContentLoaded', () => {
             t = t.replace(regex, reemplazo);
         });
 
-        // 2. Traducción integral de expresiones coloquiales, deseos y solicitudes a lenguaje ejecutivo
-        const frasesEjecutivas = [
-            [/\bfui a ver\b/gi, "se ejecutó inspección técnica de campo en"],
-            [/\bfui a visitar\b/gi, "se realizó visita de acompañamiento comercial a"],
-            [/\bse hablo con\b/gi, "se sostuvo reunión estratégica de trabajo con"],
-            [/\bse hablo de\b/gi, "se abordaron los aspectos técnicos y comerciales clave referentes a"],
-            [/\bcliente contento\b/gi, "el cliente manifiesta plena conformidad con la propuesta de valor y desempeño"],
-            [/\bcliente satisfecho\b/gi, "el cliente confirma excelente rendimiento del programa nutricional"],
-            [/\bpidio mas\b/gi, "solicitó incremento en los volúmenes de despacho"],
-            [/\bpidio producto\b/gi, "solicitó la programación prioritaria de despacho"],
-            [/\bdijo que\b/gi, "manifestó que"],
-            [/\bquedamos en\b/gi, "se concertó como compromiso formal"],
-            [/\bbuen rendimiento\b/gi, "óptimo desempeño en los indicadores zootécnicos"],
-            [/\bbaja produccion\b/gi, "novedades en el volumen productivo"],
-            [/\bse hizo charla\b/gi, "se dictó jornada de capacitación técnica especializada"],
-            [/\bse tomo muestra\b/gi, "se recolectaron muestras representativas para análisis de laboratorio"],
-            [/\bquiero (?:manejar|organizar|mejorar)\s+(?:mejor\s+)?(?:los\s+)?lotes?\s+y\s+bandas?\s+de\s+reproducci[oó]n\b/gi, "se estableció un plan estratégico orientado a optimizar la gestión, trazabilidad y programación zootécnica de lotes y bandas de reproducción"],
-            [/\bmanejrar\b/gi, "manejar"],
-            [/\bquiero\b/gi, "se proyectó"],
-            [/\bnecesito\b/gi, "se determinó la necesidad de"],
-            [/\bquiso\b/gi, "manifestó su interés en"]
-        ];
-
-        frasesEjecutivas.forEach(([regex, reemplazo]) => {
-            t = t.replace(regex, reemplazo);
-        });
-
-        // 3. Reestructuración de oraciones según su intención o verbo principal
-        if (/^la idea es /i.test(t)) {
-            t = t.replace(/^la idea es /i, "En el marco de la gestión comercial estratégica, se establece como objetivo ");
-        } else if (/^fui /i.test(t)) {
-            t = t.replace(/^fui /i, "Se llevó a cabo una visita presencial donde ");
-        } else if (/^hablé /i.test(t) || /^hable /i.test(t)) {
-            t = t.replace(/^hable /i, "Se sostuvo un espacio de diálogo técnico en el cual ").replace(/^hablé /i, "Se sostuvo un espacio de diálogo técnico en el cual ");
-        } else if (/^revisamos /i.test(t)) {
-            t = t.replace(/^revisamos /i, "Se llevó a cabo una exhaustiva revisión conjunta donde ");
-        } else if (/^entregamos /i.test(t)) {
-            t = t.replace(/^entregamos /i, "Se hizo entrega formal de documentación e insumos, destacando que ");
-        } else if (/^(se (?:estableció|llevó|sostuvo|ejecutó|determinó|proyectó))/i.test(t)) {
-            // Si ya comienza con un verbo ejecutivo procesado, se deja fluir directamente
-        } else if (!/^(Se |En |Durante |Con el fin |Atendiendo |El |La |Los |Las )/i.test(t)) {
-            // Si es un enunciado directo, lo estructuramos profesionalmente
-            t = "Durante la visita de acompañamiento técnico y comercial, " + t.charAt(0).toLowerCase() + t.slice(1);
-        }
-
-        // 4. Mejoras sintácticas de conectores internos
-        t = t.replace(/ y tambi[eé]n /gi, ", así como ");
-        t = t.replace(/ para que /gi, " con el propósito de que ");
-        t = t.replace(/ porque /gi, " debido a que ");
-
-        // 5. Capitalización y puntuación final
+        // Capitalización y puntuación final sin alterar tu estilo ni anteponer frases forzadas
         t = t.charAt(0).toUpperCase() + t.slice(1);
         if (!/[.!?]$/.test(t)) {
             t += ".";
