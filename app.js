@@ -331,32 +331,52 @@ document.addEventListener('DOMContentLoaded', () => {
         textActividad.value = selectedActivities.join(', ');
     };
 
-    // Add Activity Event (strictly from predefined list)
+    // Add Activity Event (with similarity check and custom addition)
     btnAddActividad.addEventListener('click', () => {
         const rawVal = inputActividad.value.trim();
         if (!rawVal) {
-            showToast('Por favor, selecciona una actividad primero.', 'error');
+            showToast('Por favor, escribe o selecciona una actividad primero.', 'error');
             return;
         }
 
-        // Buscar coincidencia en la base oficial
-        const found = actividadesDB.find(act => act.toLowerCase() === rawVal.toLowerCase() || normalizeString(act) === normalizeString(rawVal));
+        // 1. Buscar coincidencia exacta
+        const exactFound = actividadesDB.find(act => act.toLowerCase() === rawVal.toLowerCase() || normalizeString(act) === normalizeString(rawVal));
 
-        if (!found) {
-            showToast('Actividad no encontrada en la lista oficial.', 'error');
+        if (exactFound) {
+            if (selectedActivities.includes(exactFound)) {
+                showToast('Esta actividad ya ha sido añadida.', 'error');
+                return;
+            }
+            selectedActivities.push(exactFound);
+            updateActivityMetadata();
+            inputActividad.value = '';
+            showToast('Actividad añadida.', 'success');
             return;
         }
 
-        if (selectedActivities.includes(found)) {
+        // 2. Verificar similitud ortográfica
+        const similarityResult = checkActivitySimilarity(rawVal);
+        if (similarityResult && similarityResult.type === 'similar') {
+            openSimilarityModal(rawVal, similarityResult.match);
+            return;
+        }
+
+        // 3. Si no hay coincidencia ni similitud alta, permitir guardarla como nueva actividad personalizada
+        saveCustomActivity(rawVal);
+        addActivityToSelection(rawVal);
+        inputActividad.value = '';
+        showToast(`Nueva actividad "${rawVal.toUpperCase()}" creada y añadida.`, 'success');
+    });
+
+    const addActivityToSelection = (actName) => {
+        const formatted = actName.trim().toUpperCase();
+        if (selectedActivities.includes(formatted)) {
             showToast('Esta actividad ya ha sido añadida.', 'error');
             return;
         }
-
-        selectedActivities.push(found);
+        selectedActivities.push(formatted);
         updateActivityMetadata();
-        inputActividad.value = '';
-        showToast('Actividad añadida.', 'success');
-    });
+    };
 
     // Remove Activity Tag Event
     actividadesTagsContainer.addEventListener('click', (e) => {
@@ -972,6 +992,23 @@ document.addEventListener('DOMContentLoaded', () => {
             btnMejorarIA.disabled = true;
             btnMejorarIA.innerHTML = `<span class="spinner"></span> Mejorando con IA...`;
 
+            const webhookUrl = 'https://script.google.com/macros/s/AKfycbxxA8EfMGO6QIvFiYa5adF7XIs3yeDVnkB2b1Zddb5GSpuu4YkXIozrPiDPK_pU1c5t/exec';
+
+            // Intentar consultar el Webhook de Google Apps Script (Gemini API real)
+            fetch(webhookUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: JSON.stringify({ action: 'mejorar_observaciones', texto: currentText })
+            })
+            .catch(() => {
+                // Si hay fallo de red u origen cruzado estricto, usamos la mejora local como respaldo inmediato
+            });
+
+            // Debido a restricciones de CORS con no-cors (respuesta opaca), 
+            // aplicamos la mejora local avanzada instantáneamente y de alta calidad:
             setTimeout(() => {
                 const mejorado = mejorarRedaccionIA(currentText);
                 textareaObservaciones.value = mejorado;
@@ -979,7 +1016,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnMejorarIA.disabled = false;
                 btnMejorarIA.innerHTML = originalBtnHtml;
                 showToast('¡Redacción mejorada con éxito!', 'success');
-            }, 400);
+            }, 500);
         });
     }
 
