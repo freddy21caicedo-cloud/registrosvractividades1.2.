@@ -288,8 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
         optionsActividadContainer.classList.add('show');
     });
 
-    // Filter list on typing
+    // Filter list on typing and force uppercase
     inputActividad.addEventListener('input', () => {
+        inputActividad.value = inputActividad.value.toUpperCase();
         renderActividadOptions(inputActividad.value);
         optionsActividadContainer.classList.add('show');
     });
