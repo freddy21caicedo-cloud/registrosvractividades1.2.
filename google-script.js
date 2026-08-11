@@ -240,6 +240,14 @@ function doPost(e) {
   }
 }
 
+// Manejar solicitudes GET para pruebas o llamadas directas
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: "success",
+    message: "Italcol VGR API activa y funcionando correctamente."
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
 // Responder preflight CORS
 function doOptions(e) {
   return ContentService.createTextOutput("")

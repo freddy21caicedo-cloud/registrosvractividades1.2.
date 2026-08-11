@@ -865,116 +865,107 @@ document.addEventListener('DOMContentLoaded', () => {
         let raw = texto.trim();
         if (!raw) return "";
 
-        // Dividir el borrador por líneas o párrafos
-        let lineas = raw.split(/\n+/);
-        
-        let lineasProcesadas = lineas.map(linea => {
-            let t = linea.trim();
-            if (!t) return "";
+        // Motor de reescritura inteligente local estilo ejecutivo Italcol
+        // Convierte redacciones informales/cortas en reportes comerciales profesionales sin cambiar el sentido.
+        let t = raw;
 
-            // 1. Limpieza inicial y corrección tipográfica
-            t = t.replace(/\s+/g, " ");
-            t = t.replace(/\bi\s+dea\b/gi, "idea");
-            t = t.replace(/\bi\s+deas\b/gi, "ideas");
+        // 1. Correcciones ortográficas e industriales base
+        const correcciones = [
+            [/\bcistema\b/gi, "sistema"],
+            [/\bcistemas\b/gi, "sistemas"],
+            [/\bacuacula\b/gi, "acuícola"],
+            [/\bacuaculas\b/gi, "acuícolas"],
+            [/\bacuicola\b/gi, "acuícola"],
+            [/\bacuicolas\b/gi, "acuícolas"],
+            [/\bporcicultura\b/gi, "porcicultura"],
+            [/\bavicultura\b/gi, "avicultura"],
+            [/\bganaderia\b/gi, "ganadería"],
+            [/\btecnica\b/gi, "técnica"],
+            [/\btecnico\b/gi, "técnico"],
+            [/\btecnicos\b/gi, "técnicos"],
+            [/\bproduccion\b/gi, "producción"],
+            [/\batencion\b/gi, "atención"],
+            [/\brevision\b/gi, "revisión"],
+            [/\balimentacion\b/gi, "alimentación"],
+            [/\bnutricion\b/gi, "nutrición"],
+            [/\bparametro\b/gi, "parámetro"],
+            [/\bparametros\b/gi, "parámetros"],
+            [/\bevaluacion\b/gi, "evaluación"],
+            [/\bcapacitacion\b/gi, "capacitación"],
+            [/\bpresentacion\b/gi, "presentación"],
+            [/\bcotizacion\b/gi, "cotización"],
+            [/\bnegociacion\b/gi, "negociación"],
+            [/\binstalacion\b/gi, "instalación"],
+            [/\bdia\b/gi, "día"],
+            [/\bdias\b/gi, "días"],
+            [/\bse realizo\b/gi, "se realizó"],
+            [/\bse solicito\b/gi, "se solicitó"],
+            [/\bse reviso\b/gi, "se revisó"],
+            [/\bse entrego\b/gi, "se entregó"],
+            [/\bse confirmo\b/gi, "se confirmó"]
+        ];
 
-            // 2. Corrección ortográfica e industrial especializada Italcol
-            const correcciones = [
-                [/\bcistema\b/gi, "sistema"],
-                [/\bcistemas\b/gi, "sistemas"],
-                [/\bacuacula\b/gi, "acuícola"],
-                [/\bacuaculas\b/gi, "acuícolas"],
-                [/\bacuicola\b/gi, "acuícola"],
-                [/\bacuicolas\b/gi, "acuícolas"],
-                [/\bporcicultura\b/gi, "porcicultura"],
-                [/\bavicultura\b/gi, "avicultura"],
-                [/\bganaderia\b/gi, "ganadería"],
-                [/\btecnica\b/gi, "técnica"],
-                [/\btecnico\b/gi, "técnico"],
-                [/\btecnicos\b/gi, "técnicos"],
-                [/\bproduccion\b/gi, "producción"],
-                [/\batencion\b/gi, "atención"],
-                [/\brevision\b/gi, "revisión"],
-                [/\balimentacion\b/gi, "alimentación"],
-                [/\bnutricion\b/gi, "nutrición"],
-                [/\bparametro\b/gi, "parámetro"],
-                [/\bparametros\b/gi, "parámetros"],
-                [/\bevaluacion\b/gi, "evaluación"],
-                [/\bcapacitacion\b/gi, "capacitación"],
-                [/\bpresentacion\b/gi, "presentación"],
-                [/\bcotizacion\b/gi, "cotización"],
-                [/\bnegociacion\b/gi, "negociación"],
-                [/\binstalacion\b/gi, "instalación"],
-                [/\bdia\b/gi, "día"],
-                [/\bdias\b/gi, "días"],
-                [/\bse realizo\b/gi, "se realizó"],
-                [/\bse solicito\b/gi, "se solicitó"],
-                [/\bse reviso\b/gi, "se revisó"],
-                [/\bse entrego\b/gi, "se entregó"],
-                [/\bse confirmo\b/gi, "se confirmó"]
-            ];
-
-            correcciones.forEach(([regex, reemplazo]) => {
-                t = t.replace(regex, reemplazo);
-            });
-
-            // 3. Elevación de vocabulario ejecutivo-comercial de alto impacto
-            const vocabularioElevado = [
-                [/\bpara bien\b/gi, "de manera altamente favorable"],
-                [/\bcliente contento\b/gi, "el cliente manifiesta plena conformidad con la propuesta de valor"],
-                [/\bcliente satisfecho\b/gi, "el cliente confirma excelente desempeño del programa nutricional"],
-                [/\bpidio mas\b/gi, "solicitó incremento en los volúmenes de despacho"],
-                [/\bpidio producto\b/gi, "solicitó la programación prioritaria de despacho"],
-                [/\bse hablo con\b/gi, "se sostuvo reunión estratégica de trabajo con"],
-                [/\bse hablo de\b/gi, "se abordaron los aspectos técnicos y comerciales clave referentes a"],
-                [/\bfui a ver\b/gi, "se ejecutó inspección técnica de campo en"],
-                [/\bfui a visitar\b/gi, "se realizó visita de acompañamiento comercial a"],
-                [/\bdijo que\b/gi, "manifestó que"],
-                [/\bquedamos en\b/gi, "se concertó como compromiso formal"],
-                [/\bbuen rendimiento\b/gi, "óptimo desempeño en los indicadores zootécnicos"],
-                [/\bbaja produccion\b/gi, "novedades en el volumen productivo"],
-                [/\bse hizo charla\b/gi, "se dictó jornada de capacitación técnica especializada"],
-                [/\bse tomo muestra\b/gi, "se recolectaron muestras representativas para análisis de laboratorio"]
-            ];
-
-            vocabularioElevado.forEach(([regex, reemplazo]) => {
-                t = t.replace(regex, reemplazo);
-            });
-
-            // 4. Pirámide invertida y apertura ejecutiva directa
-            if (/^la idea es /i.test(t)) {
-                t = t.replace(/^la idea es /i, "En el marco de la gestión comercial estratégica, se establece como objetivo ");
-            } else if (/^la idea /i.test(t)) {
-                t = t.replace(/^la idea /i, "Las acciones comerciales se orientan a ");
-            } else if (/^se quiere /i.test(t)) {
-                t = t.replace(/^se quiere /i, "Se proyecta en la unidad productiva ");
-            } else if (/^se visito /i.test(t)) {
-                t = t.replace(/^se visito /i, "Se ejecutó visita de acompañamiento técnico y comercial a ");
-            } else if (/^se realizo /i.test(t)) {
-                t = t.replace(/^se realizo /i, "Se llevó a cabo exitosamente ");
-            } else if (!/^(Se |En |Durante |Con el fin |Atendiendo |El |La |Los |Las )/i.test(t)) {
-                t = "Durante la jornada de gestión comercial y seguimiento en campo, " + t.charAt(0).toLowerCase() + t.slice(1);
-            }
-
-            // 5. Conectores sintácticos de alto impacto
-            t = t.replace(/ y tambi[eé]n /gi, ", así como ");
-            t = t.replace(/ para que /gi, " con el fin de ");
-            t = t.replace(/ porque /gi, " debido a que ");
-
-            // 6. Puntuación y espacios
-            t = t.replace(/([,;.:?!])([^\s0-9])/g, "$1 $2");
-
-            // 7. Capitalización tras punto
-            t = t.replace(/(^\s*|[.!?]\s+)([a-záéíóúñ])/g, (match, p1, p2) => p1 + p2.toUpperCase());
-
-            // 8. Cierre ejecutivo
-            if (!/[.!?]$/.test(t)) {
-                t += ".";
-            }
-
-            return t;
+        correcciones.forEach(([regex, reemplazo]) => {
+            t = t.replace(regex, reemplazo);
         });
 
-        return lineasProcesadas.join("\n\n");
+        // 2. Traducción de expresiones coloquiales a lenguaje comercial ejecutivo
+        const frasesEjecutivas = [
+            [/\bfui a ver\b/gi, "se ejecutó inspección técnica de campo en"],
+            [/\bfui a visitar\b/gi, "se realizó visita de acompañamiento comercial a"],
+            [/\bse hablo con\b/gi, "se sostuvo reunión estratégica de trabajo con"],
+            [/\bse hablo de\b/gi, "se abordaron los aspectos técnicos y comerciales clave referentes a"],
+            [/\bcliente contento\b/gi, "el cliente manifiesta plena conformidad con la propuesta de valor y desempeño"],
+            [/\bcliente satisfecho\b/gi, "el cliente confirma excelente rendimiento del programa nutricional"],
+            [/\bpidio mas\b/gi, "solicitó incremento en los volúmenes de despacho"],
+            [/\bpidio producto\b/gi, "solicitó la programación prioritaria de despacho"],
+            [/\bdijo que\b/gi, "manifestó que"],
+            [/\bquedamos en\b/gi, "se concertó como compromiso formal"],
+            [/\bbuen rendimiento\b/gi, "óptimo desempeño en los indicadores zootécnicos"],
+            [/\bbaja produccion\b/gi, "novedades en el volumen productivo"],
+            [/\bse hizo charla\b/gi, "se dictó jornada de capacitación técnica especializada"],
+            [/\bse tomo muestra\b/gi, "se recolectaron muestras representativas para análisis de laboratorio"]
+        ];
+
+        frasesEjecutivas.forEach(([regex, reemplazo]) => {
+            t = t.replace(regex, reemplazo);
+        });
+
+        // 3. Reestructuración de oraciones cortas o informales para darles fluidez corporativa
+        if (/^la idea es /i.test(t)) {
+            t = t.replace(/^la idea es /i, "En el marco de la gestión comercial estratégica, se establece como objetivo ");
+        } else if (/^fui /i.test(t)) {
+            t = t.replace(/^fui /i, "Se llevó a cabo una visita presencial donde ");
+        } else if (/^hablé /i.test(t) || /^hable /i.test(t)) {
+            t = t.replace(/^hable /i, "Se sostuvo un espacio de diálogo técnico en el cual ").replace(/^hablé /i, "Se sostuvo un espacio de diálogo técnico en el cual ");
+        } else if (/^revisamos /i.test(t)) {
+            t = t.replace(/^revisamos /i, "Se llevó a cabo una exhaustiva revisión conjunta donde ");
+        } else if (/^entregamos /i.test(t)) {
+            t = t.replace(/^entregamos /i, "Se hizo entrega formal de documentación e insumos, destacando que ");
+        } else if (!/^(Se |En |Durante |Con el fin |Atendiendo |El |La |Los |Las )/i.test(t)) {
+            // Si el texto no empieza con conector formal, lo integramos de manera fluida sin repetir siempre lo mismo
+            const conectores = [
+                "Durante la visita de acompañamiento técnico y comercial, ",
+                "En el transcurso de la gestión en campo, ",
+                "Como parte del seguimiento periódico al cliente, ",
+                "Atendiendo las necesidades de la zona, "
+            ];
+            const conectorAleatorio = conectores[Math.floor(Math.random() * conectores.length)];
+            t = conectorAleatorio + t.charAt(0).toLowerCase() + t.slice(1);
+        }
+
+        // 4. Mejoras sintácticas de conectores internos
+        t = t.replace(/ y tambi[eé]n /gi, ", así como ");
+        t = t.replace(/ para que /gi, " con el propósito de que ");
+        t = t.replace(/ porque /gi, " debido a que ");
+
+        // 5. Capitalización y puntuación final
+        t = t.charAt(0).toUpperCase() + t.slice(1);
+        if (!/[.!?]$/.test(t)) {
+            t += ".";
+        }
+
+        return t;
     };
 
     if (btnMejorarIA && textareaObservaciones) {
