@@ -13,7 +13,7 @@
  */
 
 // API Key configurada para conexión directa con la IA de Google Gemini.
-var GEMINI_API_KEY = ""; // Configura aquí tu API Key de Google Gemini
+var GEMINI_API_KEY = "AQ.Ab8RN6JDke2rNj3zgRjIzIpAZFNG20ndpLg0pOqv00-odnEgmg"; // Configura aquí tu API Key de Google Gemini
 
 function mejorarConGemini(textoBorrador) {
   if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
