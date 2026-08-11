@@ -865,9 +865,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let raw = texto.trim();
         if (!raw) return "";
 
-        // Motor de reescritura inteligente local estilo ejecutivo Italcol
-        // Convierte redacciones informales/cortas en reportes comerciales profesionales sin cambiar el sentido.
         let t = raw;
+
+        // 0. Limpiar saludos informales iniciales o muletillas conversacionales
+        t = t.replace(/^(hola|buenos dias|buenas tardes|buenas|por favor|oye)\b[\s,]+/i, "");
 
         // 1. Correcciones ortográficas e industriales base
         const correcciones = [
@@ -909,7 +910,7 @@ document.addEventListener('DOMContentLoaded', () => {
             t = t.replace(regex, reemplazo);
         });
 
-        // 2. Traducción de expresiones coloquiales a lenguaje comercial ejecutivo
+        // 2. Traducción integral de expresiones coloquiales, deseos y solicitudes a lenguaje ejecutivo
         const frasesEjecutivas = [
             [/\bfui a ver\b/gi, "se ejecutó inspección técnica de campo en"],
             [/\bfui a visitar\b/gi, "se realizó visita de acompañamiento comercial a"],
@@ -924,14 +925,19 @@ document.addEventListener('DOMContentLoaded', () => {
             [/\bbuen rendimiento\b/gi, "óptimo desempeño en los indicadores zootécnicos"],
             [/\bbaja produccion\b/gi, "novedades en el volumen productivo"],
             [/\bse hizo charla\b/gi, "se dictó jornada de capacitación técnica especializada"],
-            [/\bse tomo muestra\b/gi, "se recolectaron muestras representativas para análisis de laboratorio"]
+            [/\bse tomo muestra\b/gi, "se recolectaron muestras representativas para análisis de laboratorio"],
+            [/\bquiero (?:manejar|organizar|mejorar)\s+(?:mejor\s+)?(?:los\s+)?lotes?\s+y\s+bandas?\s+de\s+reproducci[oó]n\b/gi, "se estableció un plan estratégico orientado a optimizar la gestión, trazabilidad y programación zootécnica de lotes y bandas de reproducción"],
+            [/\bmanejrar\b/gi, "manejar"],
+            [/\bquiero\b/gi, "se proyectó"],
+            [/\bnecesito\b/gi, "se determinó la necesidad de"],
+            [/\bquiso\b/gi, "manifestó su interés en"]
         ];
 
         frasesEjecutivas.forEach(([regex, reemplazo]) => {
             t = t.replace(regex, reemplazo);
         });
 
-        // 3. Reestructuración de oraciones cortas o informales para darles fluidez corporativa
+        // 3. Reestructuración de oraciones según su intención o verbo principal
         if (/^la idea es /i.test(t)) {
             t = t.replace(/^la idea es /i, "En el marco de la gestión comercial estratégica, se establece como objetivo ");
         } else if (/^fui /i.test(t)) {
@@ -942,16 +948,11 @@ document.addEventListener('DOMContentLoaded', () => {
             t = t.replace(/^revisamos /i, "Se llevó a cabo una exhaustiva revisión conjunta donde ");
         } else if (/^entregamos /i.test(t)) {
             t = t.replace(/^entregamos /i, "Se hizo entrega formal de documentación e insumos, destacando que ");
+        } else if (/^(se (?:estableció|llevó|sostuvo|ejecutó|determinó|proyectó))/i.test(t)) {
+            // Si ya comienza con un verbo ejecutivo procesado, se deja fluir directamente
         } else if (!/^(Se |En |Durante |Con el fin |Atendiendo |El |La |Los |Las )/i.test(t)) {
-            // Si el texto no empieza con conector formal, lo integramos de manera fluida sin repetir siempre lo mismo
-            const conectores = [
-                "Durante la visita de acompañamiento técnico y comercial, ",
-                "En el transcurso de la gestión en campo, ",
-                "Como parte del seguimiento periódico al cliente, ",
-                "Atendiendo las necesidades de la zona, "
-            ];
-            const conectorAleatorio = conectores[Math.floor(Math.random() * conectores.length)];
-            t = conectorAleatorio + t.charAt(0).toLowerCase() + t.slice(1);
+            // Si es un enunciado directo, lo estructuramos profesionalmente
+            t = "Durante la visita de acompañamiento técnico y comercial, " + t.charAt(0).toLowerCase() + t.slice(1);
         }
 
         // 4. Mejoras sintácticas de conectores internos
