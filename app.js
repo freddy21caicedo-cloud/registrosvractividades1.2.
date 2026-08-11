@@ -789,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save to Google Sheets Logic
     btnGuardar.addEventListener('click', () => {
-        const webhookUrl = 'https://script.google.com/macros/s/AKfycbwTWkY456vNjUR2HFIZM3vlOn-yFS0N6y6A642T0gPlfCbFLFLw_-9o_MBBw8JRTxwy/exec';
+        const webhookUrl = 'https://script.google.com/macros/s/AKfycbynXnG4YR2EaXxU3qpRfD8-uAhoWSap57nh-JrR1SUAw6zzlsdmKk6gZe4IAxFyow_S/exec';
 
         const data = getPayload();
         // Validation check
@@ -985,31 +985,35 @@ document.addEventListener('DOMContentLoaded', () => {
             btnMejorarIA.disabled = true;
             btnMejorarIA.innerHTML = `<span class="spinner"></span> Mejorando con IA...`;
 
-            const webhookUrl = 'https://script.google.com/macros/s/AKfycbwTWkY456vNjUR2HFIZM3vlOn-yFS0N6y6A642T0gPlfCbFLFLw_-9o_MBBw8JRTxwy/exec';
+            const webhookUrl = 'https://script.google.com/macros/s/AKfycbynXnG4YR2EaXxU3qpRfD8-uAhoWSap57nh-JrR1SUAw6zzlsdmKk6gZe4IAxFyow_S/exec';
+            const urlWithParams = `${webhookUrl}?action=mejorar_observaciones&texto=${encodeURIComponent(currentText)}`;
 
-            // Intentar consultar el Webhook de Google Apps Script (Gemini API real)
-            fetch(webhookUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain'
-                },
-                body: JSON.stringify({ action: 'mejorar_observaciones', texto: currentText })
-            })
-            .catch(() => {
-                // Si hay fallo de red u origen cruzado estricto, usamos la mejora local como respaldo inmediato
-            });
-
-            // Debido a restricciones de CORS con no-cors (respuesta opaca), 
-            // aplicamos la mejora local avanzada instantáneamente y de alta calidad:
-            setTimeout(() => {
-                const mejorado = mejorarRedaccionIA(currentText);
-                textareaObservaciones.value = mejorado;
-                btnUndoIA.style.display = 'inline-flex';
-                btnMejorarIA.disabled = false;
-                btnMejorarIA.innerHTML = originalBtnHtml;
-                showToast('¡Redacción mejorada con éxito!', 'success');
-            }, 500);
+            // Consultar Google Apps Script por GET (Alternativa A: Proxy hacia Google Gemini con lectura directa de JSON)
+            fetch(urlWithParams)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.textoMejorado) {
+                        textareaObservaciones.value = data.textoMejorado;
+                        btnUndoIA.style.display = 'inline-flex';
+                        showToast('¡Redacción mejorada con IA correctamente!', 'success');
+                    } else {
+                        // Fallback local si el script no devolvió éxito
+                        textareaObservaciones.value = mejorarRedaccionIA(currentText);
+                        btnUndoIA.style.display = 'inline-flex';
+                        showToast('Redacción mejorada (modo local)', 'success');
+                    }
+                })
+                .catch(() => {
+                    // Fallback local ante fallos de red o conexión
+                    const mejorado = mejorarRedaccionIA(currentText);
+                    textareaObservaciones.value = mejorado;
+                    btnUndoIA.style.display = 'inline-flex';
+                    showToast('Redacción mejorada (sin conexión)', 'success');
+                })
+                .finally(() => {
+                    btnMejorarIA.disabled = false;
+                    btnMejorarIA.innerHTML = originalBtnHtml;
+                });
         });
     }
 

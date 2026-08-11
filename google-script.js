@@ -13,7 +13,7 @@
  */
 
 // API Key configurada para conexión directa con la IA de Google Gemini.
-var GEMINI_API_KEY = "AQ.Ab8RN6LnrVKgJxMmXOTsjQ9bVeqzDOXxx7dPMYV6mG02ELbrpQ";
+var GEMINI_API_KEY = ""; // Configura aquí tu API Key de Google Gemini
 
 function mejorarConGemini(textoBorrador) {
   if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
@@ -87,6 +87,37 @@ function mejorarRedaccionLocal(texto) {
   }
 
   return t;
+}
+
+function doGet(e) {
+  try {
+    var params = e && e.parameter ? e.parameter : {};
+    var action = params.action || "";
+    
+    if (action === "mejorar_observaciones") {
+      var textoOriginal = params.texto || "";
+      var resultadoIA = mejorarConGemini(textoOriginal);
+
+      if (!resultadoIA) {
+        resultadoIA = mejorarRedaccionLocal(textoOriginal);
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        textoMejorado: resultadoIA
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: "Acción GET no válida o no especificada."
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "error",
+      message: err.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }
 
 function doPost(e) {
